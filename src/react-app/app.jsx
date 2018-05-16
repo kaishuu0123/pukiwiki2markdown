@@ -12,8 +12,11 @@ import {
     Button
 } from 'reactstrap';
 import OverlayLoader from 'react-loading-indicator-overlay/lib/OverlayLoader'
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import Octicon from 'react-octicon';
 
 const WAIT_INTERVAL = 800;
+const DISPLAY_WAIT_INTERVAL = 3000;
 
 class App extends React.Component {
 	constructor(props) {
@@ -22,19 +25,32 @@ class App extends React.Component {
 			loading: false,
 			pukiwiki: "",
 			markdown: "",
-			timer: null,
+            inputTimer: null,
+            copyTimer: null,
+            copied: false,
 		};
 		this.onTextChange = this.onTextChange.bind(this);
-		this.triggerChange = this.triggerChange.bind(this);
+        this.triggerChange = this.triggerChange.bind(this);
+        this.onCopy = this.onCopy.bind(this);
 	}
 
 	onTextChange(event) {
-		clearTimeout(this.state.timer);
+		clearTimeout(this.state.inputTimer);
 		this.setState({
 			pukiwiki: event.target.value
 		});
 
-        this.state.timer = setTimeout(this.triggerChange, WAIT_INTERVAL);
+        this.state.inputTimer = setTimeout(this.triggerChange, WAIT_INTERVAL);
+        event.preventDefault();
+    }
+
+    onCopy() {
+        clearTimeout(this.state.copyTimer);
+		this.setState({
+			copied: true
+		});
+
+        this.state.copyTimer = setTimeout(() => this.setState({copied: false}), DISPLAY_WAIT_INTERVAL);
         event.preventDefault();
 	}
 
@@ -70,7 +86,11 @@ class App extends React.Component {
                                     <Label for="markdown" className="mr-2">
                                         Markdown
                                     </Label>
-                                    <Button size="sm" outline color="info">内容をクリップボードにコピー</Button>
+                                    <CopyToClipboard text={this.state.markdown}
+                                        onCopy={this.onCopy}>
+                                        <Button size="sm" outline color="info"><Octicon name="clippy" /> 内容をクリップボードにコピー</Button>
+                                    </CopyToClipboard>
+                                    {this.state.copied ? <span className="ml-2" style={{color: 'green'}}>Copied.</span> : null}
                                     <OverlayLoader
                                         color={'blue'} // default is white
                                         loader="ScaleLoader" // check below for more loaders

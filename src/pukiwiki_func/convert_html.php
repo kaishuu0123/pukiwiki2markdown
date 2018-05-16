@@ -889,13 +889,13 @@ class Body extends Element
 
 			// Empty
 			if ($line == '') {
-				$this->last = & $this;
+				$this->last = $this->last->add(Factory_Inline($line));
 				continue;
 			}
 
 			// Horizontal Rule
 			if (substr($line, 0, 4) == '----') {
-				$this->insert(new HRule($this, $line));
+				$this->insert(Factory_Inline('---'));
 				continue;
 			}
 
@@ -995,8 +995,8 @@ class Body extends Element
 		$text = parent::toString();
 
 		// #contents
-		$text = preg_replace_callback('/<#_contents_>/',
-			array(& $this, 'replace_contents'), $text);
+		// $text = preg_replace_callback('/<#_contents_>/',
+		// 	array(& $this, 'replace_contents'), $text);
 
 		return $text . "\n";
 	}

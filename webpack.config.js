@@ -7,48 +7,46 @@ var autoprefixer = require('autoprefixer');
 module.exports = {
 
     entry: [
-        'webpack-dev-server/client?http://127.0.0.1:8080',
-        'webpack/hot/only-dev-server',
         './src/react-app/index.js',
     ],
 
     output: {
         path: path.join(__dirname, 'public/js'),
         filename: 'bundle.js',
-        publicPath: 'http://127.0.0.1:8080/js/'
+        publicPath: 'js/'
     },
 
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: ['.js', '.jsx']
     },
 
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
-                loaders: ['react-hot','babel?presets[]=es2015&presets[]=react'],
+                use: [
+                    'babel-loader?presets[]=es2015&presets[]=react'
+                ],
                 exclude: /node_modules/
             },
             {
-                test: /\.scss$/,
-                loaders: ['style', 'css', 'postcss', 'sass']
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
             },
             {
-                test: /\.css$/, // Only .css files
-                loaders: ['style', 'css', 'postcss'] // Run both loaders
+                test: /\.scss$/,
+                use: ["style-loader", "css-loader", "sass-loader"]
+            },
+            {
+                test: /\.(eot|otf|svg|ttf|woff|woff2)$/,
+                use: ['file-loader']
             }
         ]
     },
 
-    postcss: function () {
-        return [autoprefixer];
-    },
-
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
     ],
 
     devtool: 'source-map',
-    debug: true
 };
