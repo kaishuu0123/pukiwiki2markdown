@@ -95,7 +95,7 @@ class App extends React.Component {
                                         color={'blue'} // default is white
                                         loader="ScaleLoader" // check below for more loaders
                                         text="Loading..."
-                                        active={this.loading}
+                                        active={this.state.loading}
                                         backgroundColor={'black'} // default is black
                                         opacity=".7" // default is .9
                                         style={{borderRadius: '.25rem'}}
