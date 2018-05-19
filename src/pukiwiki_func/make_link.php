@@ -189,8 +189,7 @@ class Link
 		$this->name = $name;
 		$this->body = $body;
 		$this->type = $type;
-		if (! PKWK_DISABLE_INLINE_IMAGE_FROM_URI &&
-			is_url($alias) && preg_match('/\.(gif|png|jpe?g)$/i', $alias)) {
+		if (preg_match('/\.(gif|png|jpe?g)$/i', $alias)) {
 			$alias = '<img src="' . htmlsc($alias) . '" alt="' . $name . '" />';
 		} else if ($alias != '') {
 			if ($converter === NULL)

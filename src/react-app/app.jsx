@@ -14,6 +14,7 @@ import {
 import OverlayLoader from 'react-loading-indicator-overlay/lib/OverlayLoader'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Octicon from 'react-octicon';
+import CustomLoader from './custom-loader';
 
 const WAIT_INTERVAL = 800;
 const DISPLAY_WAIT_INTERVAL = 3000;
@@ -75,7 +76,9 @@ class App extends React.Component {
                         <Col md="6">
                             <Form>
                                 <FormGroup>
-                                    <Label for="pukiwiki">Pukiwiki</Label>
+                                    <Label for="pukiwiki">
+                                        <h4>Pukiwiki</h4>
+                                    </Label>
                                     <Input type="textarea" name="text" id="pukiwiki" rows="20" onChange={this.onTextChange} value={this.state.pukiwiki} />
                                 </FormGroup>
                             </Form>
@@ -84,28 +87,30 @@ class App extends React.Component {
                             <Form>
                                 <FormGroup>
                                     <Label for="markdown" className="mr-2">
-                                        Markdown
+                                        <h4>Markdown</h4>
                                     </Label>
                                     <CopyToClipboard text={this.state.markdown}
                                         onCopy={this.onCopy}>
                                         <Button size="sm" outline color="info"><Octicon name="clippy" /> 内容をクリップボードにコピー</Button>
                                     </CopyToClipboard>
                                     {this.state.copied ? <span className="ml-2" style={{color: 'green'}}>Copied.</span> : null}
-                                    <OverlayLoader
-                                        color={'blue'} // default is white
-                                        loader="ScaleLoader" // check below for more loaders
-                                        text="Loading..."
+                                    <CustomLoader
                                         active={this.state.loading}
-                                        backgroundColor={'black'} // default is black
-                                        opacity=".7" // default is .9
-                                        style={{borderRadius: '.25rem'}}
-                                        >
+                                        color={'#0E6EB8'}
+                                        text="Loading... Please wait!"
+                                        borderRadius="0.25em"
+                                        backgroundColor="rgba(0,0,0,0.8)"
+                                    >
                                         <Input type="textarea" name="text" id="markdown" rows="20" value={this.state.markdown} onChange={() => {}} />
-                                    </OverlayLoader>
+                                    </CustomLoader>
                                 </FormGroup>
                             </Form>
                         </Col>
                     </Row>
+                    <hr />
+                    <footer className="container-fluid">
+                        © 2018 @kaishuu0123 (Twitter)
+                    </footer>
                 </Container>
             </div>
         )

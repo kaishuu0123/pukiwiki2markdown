@@ -3,7 +3,6 @@ var webpack = require("webpack");
 var node_modules = path.resolve(__dirname, 'node_modules');
 var autoprefixer = require('autoprefixer');
 
-
 module.exports = {
 
     entry: [
@@ -43,10 +42,13 @@ module.exports = {
             }
         ]
     },
-
-    plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-    ],
-
+  plugins: [
+  new webpack.DefinePlugin({
+  "process.env": {
+     NODE_ENV: JSON.stringify("production")
+   }
+})
+  ],
     devtool: 'source-map',
+    performance: { hints: false }
 };

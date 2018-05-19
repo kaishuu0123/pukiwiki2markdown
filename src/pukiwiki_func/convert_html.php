@@ -775,7 +775,12 @@ class Pre extends Element
 
 	function toString()
 	{
-		return $this->wrap(join("\n", $this->elements), 'pre');
+		$str = join("\n", $this->elements);
+		if (count($this->elements) == 1) {
+			return $this->wrap(join("\n", $this->elements), 'pre');
+		} else {
+			return "\n```\n$str\n```\n";
+		}
 	}
 }
 
