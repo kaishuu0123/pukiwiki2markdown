@@ -34,6 +34,7 @@ class App extends React.Component {
 		this.onTextChange = this.onTextChange.bind(this);
         this.triggerChange = this.triggerChange.bind(this);
         this.onCopy = this.onCopy.bind(this);
+        this.onClickExample = this.onClickExample.bind(this);
 	}
 
 	onTextChange(event) {
@@ -57,16 +58,40 @@ class App extends React.Component {
 	}
 
 	triggerChange() {
-		this.setState({
-			loading: true,
-		});
+        this.setState({
+            loading: true,
+        });
 
 		axios.post('/api/v1/convert', {
 			body: this.state.pukiwiki
 		}).then(res => {
 			this.setState({ loading: false, markdown: res.data.body})
 		});
-	}
+    }
+
+    onClickExample() {
+        this.setState({
+            pukiwiki: '\
+* Header1\n\
+** Header2\n\
+\n\
+- list\n\
+-- nested list\n\
+\n\
++ number list\n\
+++ number list\n\
+\n\
+#pre{{\n\
+pre text\n\
+text\n\
+}}\n\
+'
+        },
+        this.triggerChange
+        );
+
+        event.preventDefault();
+    }
 
     render() {
         return (
@@ -85,9 +110,12 @@ class App extends React.Component {
                         <Col md="6">
                             <Form>
                                 <FormGroup>
-                                    <Label for="pukiwiki">
-                                        <h4>Pukiwiki</h4>
+                                    <Label for="pukiwiki" className="mr-2">
+                                        <h4>
+                                            Pukiwiki
+                                        </h4>
                                     </Label>
+                                    <Button size="sm" outline color="secondary" onClick={this.onClickExample}>サンプルテキストで試す</Button>
                                     <Input
                                         type="textarea"
                                         name="text"
