@@ -9,7 +9,8 @@ import {
     FormGroup,
     Label,
     Input,
-    Button
+    Button,
+    Alert
 } from 'reactstrap';
 import OverlayLoader from 'react-loading-indicator-overlay/lib/OverlayLoader'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -73,6 +74,14 @@ class App extends React.Component {
                 <Header />
                 <Container fluid className="mt-2">
                     <Row>
+                        <Col md="12" className="mb-2">
+                            <div class="lead">
+                                pukiwiki 表記のテキストを markdown 表記に変換します。<br />
+                                主に <a href="https://growi.org">Growi (growi.org</a>) で解釈可能な markdown に変換することを目的にしています <br />
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
                         <Col md="6">
                             <Form>
                                 <FormGroup>
@@ -105,6 +114,18 @@ class App extends React.Component {
                                     </CustomLoader>
                                 </FormGroup>
                             </Form>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md="12">
+                            <Alert color="info">
+                                <h4 class="alert-heading">変換ルール</h4>
+                                <ul>
+                                    <li>ヘッダ、リスト(入れ子)、pre 表記などに対応</li>
+                                    <li>テーブル表記は HTML タグに変換</li>
+                                    <li>プラグインに対応していない場合には、「@@@@ xxx プラグインには対応していません。適宜対応してください @@@@」といったメッセージに置換</li>
+                                </ul>
+                            </Alert>
                         </Col>
                     </Row>
                     <hr />
