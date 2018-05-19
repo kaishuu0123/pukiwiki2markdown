@@ -813,7 +813,7 @@ class Div extends Element
 			return "<font color>$this->name</font>";
 		} elseif ($this->name == 'size') {
 			return "<font size>$this->name</font>";
-		} elseif ($this->name == 'contentsx') {
+		} elseif ($this->name == 'lsx') {
 			return "\$lsx(./)";
 		} elseif ($this->name == 'table_edit2') {
 			$this->param = str_replace(",table_mod=close\r", "", $this->param);
