@@ -77,7 +77,7 @@ class App extends React.Component {
                         <Col md="12" className="mb-2">
                             <div class="lead">
                                 pukiwiki 表記のテキストを markdown 表記に変換します。<br />
-                                主に <a href="https://growi.org">Growi (growi.org</a>) で解釈可能な markdown に変換することを目的にしています <br />
+                                主に <a href="https://growi.org">Growi (growi.org)</a> で解釈可能な markdown に変換することを目的にしています <br />
                             </div>
                         </Col>
                     </Row>
