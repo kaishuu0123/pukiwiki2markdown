@@ -88,7 +88,15 @@ class App extends React.Component {
                                     <Label for="pukiwiki">
                                         <h4>Pukiwiki</h4>
                                     </Label>
-                                    <Input type="textarea" name="text" id="pukiwiki" rows="20" onChange={this.onTextChange} value={this.state.pukiwiki} />
+                                    <Input
+                                        type="textarea"
+                                        name="text"
+                                        id="pukiwiki"
+                                        rows="20"
+                                        onChange={this.onTextChange}
+                                        value={this.state.pukiwiki}
+                                        placeholder="ここに pukiwiki 形式のテキストを入力してください"
+                                    />
                                 </FormGroup>
                             </Form>
                         </Col>
@@ -110,7 +118,9 @@ class App extends React.Component {
                                         borderRadius="0.25em"
                                         backgroundColor="rgba(0,0,0,0.8)"
                                     >
-                                        <Input type="textarea" name="text" id="markdown" rows="20" value={this.state.markdown} onChange={() => {}} />
+                                        <Input type="textarea" name="text" id="markdown" rows="20" value={this.state.markdown} onChange={() => {}}
+                                            placeholder="ここに変換後の結果が表示されます"
+                                        />
                                     </CustomLoader>
                                 </FormGroup>
                             </Form>
