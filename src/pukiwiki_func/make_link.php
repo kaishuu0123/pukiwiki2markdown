@@ -265,7 +265,9 @@ EOD;
 		$str = FALSE;
 
 		// // Try to call the plugin
-		if (exist_plugin_inline($this->name)) {
+		if ($this->name == 'new') {
+			$str = $body;
+		} else if (exist_plugin_inline($this->name)) {
 			$str = do_plugin_inline($this->name, $this->param, $body);
 		}
 
