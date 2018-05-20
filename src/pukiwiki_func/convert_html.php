@@ -682,7 +682,14 @@ class Table extends Element
 		$string = $this->wrap($string, 'table', ' class="table table-bordered"');
 
 		// return $this->wrap($string, 'div', ' class="ie5"');
-		return tidy_repair_string($string, ['indent' => true, 'show-body-only' => true], 'utf8') . "\n";
+		// return tidy_repair_string($string, ['indent' => true, 'show-body-only' => true], 'utf8') . "\n";
+		$dom = new DOMDocument();
+
+		$dom->preserveWhiteSpace = false;
+		$dom->loadHTML($string, LIBXML_HTML_NOIMPLIED);
+		$dom->formatOutput = true;
+
+		return $dom->saveXML($dom->documentElement);
 	}
 }
 
