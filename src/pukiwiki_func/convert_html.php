@@ -686,6 +686,7 @@ class Table extends Element
 		$dom = new DOMDocument();
 
 		$dom->preserveWhiteSpace = false;
+		$string = mb_convert_encoding($string, 'HTML-ENTITIES', 'UTF-8');
 		$dom->loadHTML($string, LIBXML_HTML_NOIMPLIED);
 		$dom->formatOutput = true;
 
