@@ -12,7 +12,6 @@ import {
     Button,
     Alert
 } from 'reactstrap';
-import OverlayLoader from 'react-loading-indicator-overlay/lib/OverlayLoader'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Octicon from 'react-octicon';
 import CustomLoader from './custom-loader';

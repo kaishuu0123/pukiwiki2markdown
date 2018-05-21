@@ -2,6 +2,7 @@ var path = require('path');
 var webpack = require("webpack");
 var node_modules = path.resolve(__dirname, 'node_modules');
 var autoprefixer = require('autoprefixer');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
 
@@ -42,12 +43,13 @@ module.exports = {
             }
         ]
     },
-  plugins: [
-  new webpack.DefinePlugin({
-  "process.env": {
-     NODE_ENV: JSON.stringify("production")
-   }
-})
-  ],
+    plugins: [
+      // new BundleAnalyzerPlugin(),
+      new webpack.DefinePlugin({
+        "process.env": {
+          NODE_ENV: JSON.stringify("production")
+        }
+      })
+    ],
     performance: { hints: false }
 };
