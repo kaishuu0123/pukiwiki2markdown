@@ -14,6 +14,8 @@ require('plugin/color.inc.php');
 require('plugin/size.inc.php');
 require('plugin/br.inc.php');
 
+define('PLUGIN_DIR', './plugin/');
+
 // Set global variables for plugins
 function set_plugin_messages($messages)
 {
