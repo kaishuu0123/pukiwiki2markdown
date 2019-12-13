@@ -167,7 +167,12 @@ text\n\
                     </Row>
                     <hr />
                     <footer className="container-fluid">
-                        © 2018 @kaishuu0123 (Twitter)
+                        <p>
+                            © 2018 <a href="https://twitter.com/kaishuu0123">@kaishuu0123 (Twitter)</a>
+                        </p>
+                        <p>
+                            <a href="https://github.com/kaishuu0123/pukiwiki2markdown">https://github.com/kaishuu0123/pukiwiki2markdown</a>
+                        </p>
                     </footer>
                 </Container>
             </div>
