@@ -2,7 +2,7 @@
 
 ## Demo
 
-* https://pukiwiki2markdown.saino.me/
+* https://sandbox.saino.me/pukiwiki2markdown/
 
 ## Development
 
