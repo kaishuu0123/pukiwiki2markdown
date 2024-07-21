@@ -49,7 +49,7 @@
     "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^3.1.11",
-    "webpack-validator": "^2.2.6"
+    "webpack-validator": "^3.0.1"
   },
   "scripts": {
     "validate": "webpack-validator webpack.config.js --env.dev",
