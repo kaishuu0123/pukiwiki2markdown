@@ -13,7 +13,7 @@
   },
   "homepage": "https://gitlab.com/Fotoscity/slim#README",
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "^0.28.0",
     "bootstrap": "^4.1.1",
     "classnames": "^2.2.3",
     "history": "^3.0.0",
