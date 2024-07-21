@@ -1,19 +1,22 @@
-version: '2'
-
 volumes:
-    logs:
-        driver: local
+  logs:
+    driver: local
 
 services:
-    slim:
-        image: php:7-alpine
-        working_dir: /var/www
-        command: php -S 0.0.0.0:8080 -t public -c php.ini
-        environment:
-            docker: "true"
-        ports:
-            - 8080:8080
-        restart: always
-        volumes:
-            - .:/var/www
-            - logs:/var/www/logs
+  slim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      docker: "true"
+      # GTM_TAG: ''
+    healthcheck:
+      test: curl --fail http://localhost:8080 || exit 1
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10
+    ports:
+      - 8080:8080
+    restart: always
+      - logs:/var/www/logs

@@ -20,27 +20,27 @@ const WAIT_INTERVAL = 800;
 const DISPLAY_WAIT_INTERVAL = 3000;
 
 class App extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			loading: false,
-			pukiwiki: "",
-			markdown: "",
+    constructor(props) {
+        super(props);
+        this.state = {
+            loading: false,
+            pukiwiki: "",
+            markdown: "",
             inputTimer: null,
             copyTimer: null,
             copied: false,
-		};
-		this.onTextChange = this.onTextChange.bind(this);
+        };
+        this.onTextChange = this.onTextChange.bind(this);
         this.triggerChange = this.triggerChange.bind(this);
         this.onCopy = this.onCopy.bind(this);
         this.onClickExample = this.onClickExample.bind(this);
-	}
+    }
 
-	onTextChange(event) {
-		clearTimeout(this.state.inputTimer);
-		this.setState({
-			pukiwiki: event.target.value
-		});
+    onTextChange(event) {
+        clearTimeout(this.state.inputTimer);
+        this.setState({
+            pukiwiki: event.target.value
+        });
 
         this.state.inputTimer = setTimeout(this.triggerChange, WAIT_INTERVAL);
         event.preventDefault();
@@ -48,24 +48,24 @@ class App extends React.Component {
 
     onCopy() {
         clearTimeout(this.state.copyTimer);
-		this.setState({
-			copied: true
-		});
+        this.setState({
+            copied: true
+        });
 
-        this.state.copyTimer = setTimeout(() => this.setState({copied: false}), DISPLAY_WAIT_INTERVAL);
+        this.state.copyTimer = setTimeout(() => this.setState({ copied: false }), DISPLAY_WAIT_INTERVAL);
         event.preventDefault();
-	}
+    }
 
-	triggerChange() {
+    triggerChange() {
         this.setState({
             loading: true,
         });
 
-		axios.post('/api/v1/convert', {
-			body: this.state.pukiwiki
-		}).then(res => {
-			this.setState({ loading: false, markdown: res.data.body})
-		});
+        axios.post('api/v1/convert', {
+            body: this.state.pukiwiki
+        }).then(res => {
+            this.setState({ loading: false, markdown: res.data.body })
+        });
     }
 
     onClickExample() {
@@ -86,7 +86,7 @@ text\n\
 }}\n\
 '
         },
-        this.triggerChange
+            this.triggerChange
         );
 
         event.preventDefault();
@@ -101,7 +101,7 @@ text\n\
                         <Col md="12" className="mb-2">
                             <div class="lead">
                                 pukiwiki 表記のテキストを markdown 表記に変換します。<br />
-                                <a href="https://growi.org">Growi (growi.org)</a> で解釈できる markdown に変換することを主な目的にしています <br />
+                                <a href="https://growi.org">GROWI (growi.org)</a> で解釈できる markdown に変換することを主な目的にしています <br />
                             </div>
                         </Col>
                     </Row>
@@ -137,7 +137,7 @@ text\n\
                                         onCopy={this.onCopy}>
                                         <Button size="sm" outline color="info"><Octicon name="clippy" /> 内容をクリップボードにコピー</Button>
                                     </CopyToClipboard>
-                                    {this.state.copied ? <span className="ml-2" style={{color: 'green'}}>Copied.</span> : null}
+                                    {this.state.copied ? <span className="ml-2" style={{ color: 'green' }}>Copied.</span> : null}
                                     <CustomLoader
                                         active={this.state.loading}
                                         color={'#0E6EB8'}
@@ -145,7 +145,7 @@ text\n\
                                         borderRadius="0.25em"
                                         backgroundColor="rgba(0,0,0,0.8)"
                                     >
-                                        <Input type="textarea" name="text" id="markdown" rows="20" value={this.state.markdown} onChange={() => {}}
+                                        <Input type="textarea" name="text" id="markdown" rows="20" value={this.state.markdown} onChange={() => { }}
                                             placeholder="ここに変換後の結果が表示されます"
                                         />
                                     </CustomLoader>

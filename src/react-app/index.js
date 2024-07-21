@@ -1,5 +1,5 @@
 import React from 'react';
-import {render} from 'react-dom';
+import { render } from 'react-dom';
 
 // import store from './store';
 // import AppRouter from './components/AppRouter';
@@ -13,6 +13,6 @@ import App from './app';
 console.log('hello react');
 
 render(
-    <App />,
-    document.getElementById('app')
+  <App />,
+  document.getElementById('app')
 );

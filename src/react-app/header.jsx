@@ -1,23 +1,23 @@
 import React from 'react';
 import {
-    Navbar,
-    NavbarBrand
+  Navbar,
+  NavbarBrand
 } from 'reactstrap';
 
 class Header extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    render() {
-        return (
-            <div>
-                <Navbar color="dark" dark>
-                    <NavbarBrand href="/">pukiwiki2markdown</NavbarBrand>
-                </Navbar>
-            </div>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <Navbar color="dark" dark>
+          <NavbarBrand href="/">pukiwiki2markdown</NavbarBrand>
+        </Navbar>
+      </div>
+    )
+  }
 }
 
 export default Header;

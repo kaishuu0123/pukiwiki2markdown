@@ -9,11 +9,11 @@ export default class CustomLoader extends React.Component {
     let isActive = 'none';
     let color = null;
 
-    if(this.props.active) isActive = 'block'
+    if (this.props.active) isActive = 'block'
 
     if (this.props.color) {
       color = this.props.color
-    }else {
+    } else {
       color = 'white';
     };
 
@@ -24,15 +24,15 @@ export default class CustomLoader extends React.Component {
     const LoaderWrapper = styled.div`
       &:before {
         content: '';
-        background-color: ${ this.props.backgroundColor || 'black' };
+        background-color: ${this.props.backgroundColor || 'black'};
         width: 100%;
         height: 100%;
         position: absolute;
         z-index: 99;
-        border-radius: ${ this.props.borderRadius }
+        border-radius: ${this.props.borderRadius}
       }
 
-      display: ${ isActive }
+      display: ${isActive}
     `;
 
     const StyledLoader = styled.div`
@@ -52,7 +52,7 @@ export default class CustomLoader extends React.Component {
       <Wrapper>
         <LoaderWrapper>
           <StyledLoader>
-          <Loader type="line-scale" active color={this.props.color} />
+            <Loader type="line-scale" active color={this.props.color} />
             {textElement}
           </StyledLoader>
         </LoaderWrapper>
