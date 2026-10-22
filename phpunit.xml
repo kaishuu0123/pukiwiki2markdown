@@ -1,4 +1,4 @@
-<phpunit bootstrap="vendor/autoload.php">
+<phpunit bootstrap="vendor/autoload.php" cacheDirectory=".phpunit.cache" colors="true">
     <testsuites>
         <testsuite name="SlimSkeleton">
             <directory>tests</directory>

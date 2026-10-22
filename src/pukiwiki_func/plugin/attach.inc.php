@@ -65,7 +65,7 @@ function plugin_attach_convert()
 
 	$ret = '';
 	if (! $nolist) {
-		$obj  = & new AttachPages($page);
+		$obj  = new AttachPages($page);
 		$ret .= $obj->toString($page, TRUE);
 	}
 	if (! $noform) {
@@ -139,7 +139,7 @@ function attach_filelist()
 
 	$page = isset($vars['page']) ? $vars['page'] : '';
 
-	$obj = & new AttachPages($page, 0);
+	$obj = new AttachPages($page, 0);
 
 	if (! isset($obj->pages[$page])) {
 		return '';
@@ -186,7 +186,7 @@ function attach_upload($file, $page, $pass = NULL)
 			'msg'=>$_attach_messages['err_adminpass']);
 	}
 
-	$obj = & new AttachFile($page, $file['name']);
+	$obj = new AttachFile($page, $file['name']);
 	if ($obj->exist)
 		return array('result'=>FALSE,
 			'msg'=>$_attach_messages['err_exists']);
@@ -236,7 +236,7 @@ function attach_info($err = '')
 	foreach (array('refer', 'file', 'age') as $var)
 		${$var} = isset($vars[$var]) ? $vars[$var] : '';
 
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	return $obj->getstatus() ?
 		$obj->info($err) :
 		array('msg'=>$_attach_messages['err_notfound']);
@@ -253,7 +253,7 @@ function attach_delete()
 	if (is_freeze($refer) || ! is_editable($refer))
 		return array('msg'=>$_attach_messages['err_noparm']);
 
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 		
@@ -272,7 +272,7 @@ function attach_freeze($freeze)
 	if (is_freeze($refer) || ! is_editable($refer)) {
 		return array('msg'=>$_attach_messages['err_noparm']);
 	} else {
-		$obj = & new AttachFile($refer, $file, $age);
+		$obj = new AttachFile($refer, $file, $age);
 		return $obj->getstatus() ?
 			$obj->freeze($freeze, $pass) :
 			array('msg'=>$_attach_messages['err_notfound']);
@@ -291,7 +291,7 @@ function attach_rename()
 	if (is_freeze($refer) || ! is_editable($refer)) {
 		return array('msg'=>$_attach_messages['err_noparm']);
 	}
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	if (! $obj->getstatus())
 		return array('msg'=>$_attach_messages['err_notfound']);
 
@@ -308,7 +308,7 @@ function attach_open()
 		${$var} = isset($vars[$var]) ? $vars[$var] : '';
 	}
 
-	$obj = & new AttachFile($refer, $file, $age);
+	$obj = new AttachFile($refer, $file, $age);
 	return $obj->getstatus() ?
 		$obj->open() :
 		array('msg'=>$_attach_messages['err_notfound']);
@@ -321,7 +321,7 @@ function attach_list()
 
 	$refer = isset($vars['refer']) ? $vars['refer'] : '';
 
-	$obj = & new AttachPages($refer);
+	$obj = new AttachPages($refer);
 
 	$msg = $_attach_messages[($refer == '') ? 'msg_listall' : 'msg_listpage'];
 	$body = ($refer == '' || isset($obj->pages[$refer])) ?
@@ -431,14 +431,14 @@ EOD;
 // ファイル
 class AttachFile
 {
-	var $page, $file, $age, $basename, $filename, $logname;
-	var $time = 0;
-	var $size = 0;
-	var $time_str = '';
-	var $size_str = '';
-	var $status = array('count'=>array(0), 'age'=>'', 'pass'=>'', 'freeze'=>FALSE);
+	public $page, $file, $age, $basename, $filename, $logname;
+	public $time = 0;
+	public $size = 0;
+	public $time_str = '';
+	public $size_str = '';
+	public $status = array('count'=>array(0), 'age'=>'', 'pass'=>'', 'freeze'=>FALSE);
 
-	function AttachFile($page, $file, $age = 0)
+	public function __construct($page, $file, $age = 0)
 	{
 		$this->page = $page;
 		$this->file = preg_replace('#^.*/#','',$file);
@@ -453,7 +453,7 @@ class AttachFile
 	}
 
 	// ファイル情報取得
-	function getstatus()
+	public function getstatus()
 	{
 		if (! $this->exist) return FALSE;
 
@@ -474,7 +474,7 @@ class AttachFile
 	}
 
 	// ステータス保存
-	function putstatus()
+	public function putstatus()
 	{
 		$this->status['count'] = join(',', $this->status['count']);
 		$fp = fopen($this->logname, 'wb') or
@@ -490,11 +490,11 @@ class AttachFile
 	}
 
 	// 日付の比較関数
-	function datecomp($a, $b) {
+	public function datecomp($a, $b) {
 		return ($a->time == $b->time) ? 0 : (($a->time > $b->time) ? -1 : 1);
 	}
 
-	function toString($showicon, $showinfo)
+	public function toString($showicon, $showinfo)
 	{
 		global $script, $_attach_messages;
 
@@ -517,7 +517,7 @@ class AttachFile
 	}
 
 	// 情報表示
-	function info($err)
+	public function info($err)
 	{
 		global $script, $_attach_messages;
 
@@ -602,7 +602,7 @@ EOD;
 		return $retval;
 	}
 
-	function delete($pass)
+	public function delete($pass)
 	{
 		global $_attach_messages, $notify, $notify_subject;
 
@@ -654,7 +654,7 @@ EOD;
 		return array('msg'=>$_attach_messages['msg_deleted']);
 	}
 
-	function rename($pass, $newname)
+	public function rename($pass, $newname)
 	{
 		global $_attach_messages, $notify, $notify_subject;
 
@@ -679,7 +679,7 @@ EOD;
 		return array('msg'=>$_attach_messages['msg_renamed']);
 	}
 
-	function freeze($freeze, $pass)
+	public function freeze($freeze, $pass)
 	{
 		global $_attach_messages;
 
@@ -692,7 +692,7 @@ EOD;
 		return array('msg'=>$_attach_messages[$freeze ? 'msg_freezed' : 'msg_unfreezed']);
 	}
 
-	function open()
+	public function open()
 	{
 		$this->getstatus();
 		$this->status['count'][$this->age]++;
@@ -729,21 +729,21 @@ EOD;
 // ファイルコンテナ
 class AttachFiles
 {
-	var $page;
-	var $files = array();
+	public $page;
+	public $files = array();
 
-	function AttachFiles($page)
+	public function __construct($page)
 	{
 		$this->page = $page;
 	}
 
-	function add($file, $age)
+	public function add($file, $age)
 	{
-		$this->files[$file][$age] = & new AttachFile($this->page, $file, $age);
+		$this->files[$file][$age] = new AttachFile($this->page, $file, $age);
 	}
 
 	// ファイル一覧を取得
-	function toString($flat)
+	public function toString($flat)
 	{
 		global $_title_cannotread;
 
@@ -778,7 +778,7 @@ class AttachFiles
 	}
 
 	// ファイル一覧を取得(inline)
-	function to_flat()
+	public function to_flat()
 	{
 		$ret = '';
 		$files = array();
@@ -799,9 +799,9 @@ class AttachFiles
 // ページコンテナ
 class AttachPages
 {
-	var $pages = array();
+	public $pages = array();
 
-	function AttachPages($page = '', $age = NULL)
+	public function __construct($page = '', $age = NULL)
 	{
 
 		$dir = opendir(UPLOAD_DIR) or
@@ -821,14 +821,14 @@ class AttachPages
 			$_file = decode($matches[2]);
 			$_age  = isset($matches[3]) ? $matches[3] : 0;
 			if (! isset($this->pages[$_page])) {
-				$this->pages[$_page] = & new AttachFiles($_page);
+				$this->pages[$_page] = new AttachFiles($_page);
 			}
 			$this->pages[$_page]->add($_file, $_age);
 		}
 		closedir($dir);
 	}
 
-	function toString($page = '', $flat = FALSE)
+	public function toString($page = '', $flat = FALSE)
 	{
 		if ($page != '') {
 			if (! isset($this->pages[$page])) {

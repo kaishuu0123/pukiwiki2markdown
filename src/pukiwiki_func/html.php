@@ -197,14 +197,11 @@ function catbody($title, $page, $body)
 				'|' . '&[^;]+;' .			// Ignore entities
 				'|' . '(' . $pattern . ')' .		// $matches[1]: Regex for a search word
 				'/sS';
-			$decorate_Nth_word = create_function(
-				'$matches',
-				'return (isset($matches[1])) ? ' .
-					'\'<strong class="word' .
-						$id .
-					'">\' . $matches[1] . \'</strong>\' : ' .
-					'$matches[0];'
-			);
+			$decorate_Nth_word = function ($matches) use ($id) {
+				return (isset($matches[1])) ?
+					'<strong class="word' . $id . '">' . $matches[1] . '</strong>' :
+					$matches[0];
+			};
 			$body  = preg_replace_callback($pattern, $decorate_Nth_word, $body);
 			$notes = preg_replace_callback($pattern, $decorate_Nth_word, $notes);
 			++$id;
@@ -260,6 +257,9 @@ function make_related($page, $tag = '')
 	return $retval;
 }
 
+global $line_rules, $_list_pad_str;
+// list の style 属性は Markdown 変換では使わない
+$_list_pad_str = '';
 $line_rules = array(
 	'COLOR\(([^\(\)]*)\){([^}]*)}'	=> '<span style="color:$1">$2</span>',
 	'SIZE\(([^\(\)]*)\){([^}]*)}'	=> '<span style="font-size:$1px">$2</span>',
@@ -278,8 +278,9 @@ function make_line_rules($str)
 	static $pattern, $replace;
 
 	if (! isset($pattern)) {
-        $pattern = array_map(create_function('$a',
-			'return \'/\' . $a . \'/\';'), array_keys($line_rules));
+        $pattern = array_map(function ($a) {
+			return '/' . $a . '/';
+		}, array_keys($line_rules));
 		$replace = array_values($line_rules);
 		unset($line_rules);
 	}

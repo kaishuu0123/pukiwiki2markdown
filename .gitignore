@@ -3,3 +3,5 @@
 !/logs/README.md
 node_modules
 logs/app.log
+.phpunit.cache/
+.phpunit.result.cache

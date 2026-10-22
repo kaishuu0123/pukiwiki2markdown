@@ -327,8 +327,8 @@ function plugin_ref_body($args)
 					$height = (int)($height / $zoom);
 				}
 			} else {
-				$width  = $params['_w'] ? $params['_w'] : $width;
-				$height = $params['_h'] ? $params['_h'] : $height;
+				$width  = $params['_w'] ?: $width;
+				$height = $params['_h'] ?: $height;
 			}
 		}
 		if ($params['_%']) {

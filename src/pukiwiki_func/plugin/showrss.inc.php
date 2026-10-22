@@ -75,10 +75,10 @@ function plugin_showrss_convert()
 // Create HTML from RSS array()
 class ShowRSS_html
 {
-	var $items = array();
-	var $class = '';
+	public $items = array();
+	public $class = '';
 
-	function ShowRSS_html($rss)
+	public function __construct($rss)
 	{
 		foreach ($rss as $date=>$items) {
 			foreach ($items as $item) {
@@ -92,22 +92,22 @@ class ShowRSS_html
 		}
 	}
 
-	function format_link($link)
+	public function format_link($link)
 	{
 		return $link . '<br />' . "\n";
 	}
 
-	function format_list($date, $str)
+	public function format_list($date, $str)
 	{
 		return $str;
 	}
 
-	function format_body($str)
+	public function format_body($str)
 	{
 		return $str;
 	}
 
-	function toString($timestamp)
+	public function toString($timestamp)
 	{
 		$retval = '';
 		foreach ($this->items as $date=>$items)
@@ -123,26 +123,26 @@ EOD;
 
 class ShowRSS_html_menubar extends ShowRSS_html
 {
-	var $class = ' class="small"';
+	public $class = ' class="small"';
 
-	function format_link($link) {
+	public function format_link($link) {
 		return '<li>' . $link . '</li>' . "\n";
 	}
 
-	function format_body($str) {
+	public function format_body($str) {
 		return '<ul class="recent_list">' . "\n" . $str . '</ul>' . "\n";
 	}
 }
 
 class ShowRSS_html_recent extends ShowRSS_html
 {
-	var $class = ' class="small"';
+	public $class = ' class="small"';
 
-	function format_link($link) {
+	public function format_link($link) {
 		return '<li>' . $link . '</li>' . "\n";
 	}
 
-	function format_list($date, $str) {
+	public function format_list($date, $str) {
 		return '<strong>' . $date . '</strong>' . "\n" .
 			'<ul class="recent_list">' . "\n" . $str . '</ul>' . "\n";
 	}
@@ -204,13 +204,13 @@ function plugin_showrss_cache_expire($cachehour)
 // Get RSS and array() them
 class ShowRSS_XML
 {
-	var $items;
-	var $item;
-	var $is_item;
-	var $tag;
-	var $encoding;
+	public $items;
+	public $item;
+	public $is_item;
+	public $tag;
+	public $encoding;
 
-	function parse($buf)
+	public function parse($buf)
 	{
 		$this->items   = array();
 		$this->item    = array();
@@ -240,12 +240,11 @@ class ShowRSS_XML
 				xml_error_string(xml_get_error_code($xml_parser)),
 				xml_get_current_line_number($xml_parser), $buf));
 		}
-		xml_parser_free($xml_parser);
 
 		return $this->items;
 	}
 
-	function escape($str)
+	public function escape($str)
 	{
 		// Unescape already-escaped chars (&lt;, &gt;, &amp;, ...) in RSS body before htmlsc()
 		$str = strtr($str, array_flip(get_html_translation_table(ENT_COMPAT)));
@@ -257,7 +256,7 @@ class ShowRSS_XML
 	}
 
 	// Tag start
-	function start_element($parser, $name, $attrs)
+	public function start_element($parser, $name, $attrs)
 	{
 		if ($this->is_item) {
 			$this->tag     = $name;
@@ -267,7 +266,7 @@ class ShowRSS_XML
 	}
 
 	// Tag end
-	function end_element($parser, $name)
+	public function end_element($parser, $name)
 	{
 		if (! $this->is_item || $name != 'ITEM') return;
 
@@ -295,7 +294,7 @@ class ShowRSS_XML
 		$this->is_item        = FALSE;
 	}
 
-	function character_data($parser, $data)
+	public function character_data($parser, $data)
 	{
 		if (! $this->is_item) return;
 		if (! isset($this->item[$this->tag])) $this->item[$this->tag] = '';

@@ -51,44 +51,57 @@ function plugin_referer_body($page, $sort)
 
 	switch ($sort) {
 	case '0d': // 0d 最終更新日時(新着順)
-		usort($data, create_function('$a,$b', 'return $b[0] - $a[0];'));
+		usort($data, function ($a, $b) {
+            return $b[0] - $a[0];
+        });
 		$color_last = $bg['cur'];
 		$arrow_last = $_referer_msg['msg_Chr_darr'];
 		$sort_last = '0a';
 		break;
 	case '0a': // 0a 最終更新日時(日付順)
-		usort($data, create_function('$a,$b', 'return $a[0] - $b[0];'));
+		usort($data, function ($a, $b) {
+            return $a[0] - $b[0];
+        });
 		$color_last = $bg['cur'];
 		$arrow_last = $_referer_msg['msg_Chr_uarr'];
 //		$sort_last = '0d';
 		break;
 	case '1d': // 1d 初回登録日時(新着順)
-		usort($data, create_function('$a,$b', 'return $b[1] - $a[1];'));
+		usort($data, function ($a, $b) {
+            return $b[1] - $a[1];
+        });
 		$color_1st = $bg['cur'];
 		$arrow_1st = $_referer_msg['msg_Chr_darr'];
 		$sort_1st = '1a';
 		break;
 	case '1a': // 1a 初回登録日時(日付順)
-		usort($data, create_function('$a,$b', 'return $a[1] - $b[1];'));
+		usort($data, function ($a, $b) {
+            return $a[1] - $b[1];
+        });
 		$color_1st = $bg['cur'];
 		$arrow_1st = $_referer_msg['msg_Chr_uarr'];
 //		$sort_1st = '1d';
 		break;
 	case '2d': // 2d カウンタ(大きい順)
-		usort($data, create_function('$a,$b', 'return $b[2] - $a[2];'));
+		usort($data, function ($a, $b) {
+            return $b[2] - $a[2];
+        });
 		$color_ctr = $bg['cur'];
 		$arrow_ctr = $_referer_msg['msg_Chr_darr'];
 		$sort_ctr = '2a';
 		break;
 	case '2a': // 2a カウンタ(小さい順)
-		usort($data, create_function('$a,$b', 'return $a[2] - $b[2];'));
+		usort($data, function ($a, $b) {
+            return $a[2] - $b[2];
+        });
 		$color_ctr = $bg['cur'];
 		$arrow_ctr = $_referer_msg['msg_Chr_uarr'];
 //		$sort_ctr = '2d';
 		break;
 	case '3': // 3 Referer
-		usort($data, create_function('$a,$b',
-			'return ($a[3] == $b[3]) ? 0 : (($a[3] > $b[3]) ? 1 : -1);'));
+		usort($data, function ($a, $b) {
+            return $a[3] == $b[3] ? 0 : ($a[3] > $b[3] ? 1 : -1);
+        });
 		$color_ref = $bg['cur'];
 		break;
 	}
@@ -99,7 +112,9 @@ function plugin_referer_body($page, $sort)
 		list($ltime, $stime, $count, $url, $enable) = $arr;
 
 		// 非ASCIIキャラクタ(だけ)をURLエンコードしておく BugTrack/440
-		$e_url = htmlsc(preg_replace('/([" \x80-\xff]+)/e', 'rawurlencode("$1")', $url));
+		$e_url = htmlsc(preg_replace_callback('/([" \x80-\xff]+)/', function ($matches) {
+            return rawurlencode($matches[1]);
+        }, $url));
 		$s_url = htmlsc(mb_convert_encoding(rawurldecode($url), SOURCE_ENCODING, 'auto'));
 
 		$lpass = get_passage($ltime, FALSE); // 最終更新日時からの経過時間

@@ -164,7 +164,7 @@ function plugin_tracker_action()
 			}
 			$postdata[$num] = str_replace(
 				"[$key]",
-				($postdata[$num]{0} == '|' or $postdata[$num]{0} == ':') ?
+				($postdata[$num][0] == '|' or $postdata[$num][0] == ':') ?
 					str_replace('|','&#x7c;',$value) : $value,
 				$postdata[$num]
 			);
@@ -229,7 +229,7 @@ function plugin_tracker_get_fields($base,$refer,&$config)
 		) as $field=>$class)
 	{
 		$class = 'Tracker_field_'.$class;
-		$fields[$field] = &new $class(array($field,$_tracker_messages["btn$field"],'','20',''),$base,$refer,$config);
+		$fields[$field] = new $class(array($field,$_tracker_messages["btn$field"],'','20',''),$base,$refer,$config);
 	}
 
 	foreach ($config->get('fields') as $field)
@@ -242,25 +242,25 @@ function plugin_tracker_get_fields($base,$refer,&$config)
 			$field[2] = 'text';
 			$field[3] = '20';
 		}
-		$fields[$field[0]] = &new $class($field,$base,$refer,$config);
+		$fields[$field[0]] = new $class($field,$base,$refer,$config);
 	}
 	return $fields;
 }
 // フィールドクラス
 class Tracker_field
 {
-	var $name;
-	var $title;
-	var $values;
-	var $default_value;
-	var $page;
-	var $refer;
-	var $config;
-	var $data;
-	var $sort_type = SORT_REGULAR;
-	var $id = 0;
+	public $name;
+	public $title;
+	public $values;
+	public $default_value;
+	public $page;
+	public $refer;
+	public $config;
+	public $data;
+	public $sort_type = SORT_REGULAR;
+	public $id = 0;
 
-	function Tracker_field($field,$page,$refer,&$config)
+	public function __construct($field,$page,$refer,&$config)
 	{
 		global $post;
 		static $id = 0;
@@ -275,31 +275,31 @@ class Tracker_field
 		$this->config = &$config;
 		$this->data = array_key_exists($this->name,$post) ? $post[$this->name] : '';
 	}
-	function get_tag()
+	public function get_tag()
 	{
 	}
-	function get_style($str)
+	public function get_style($str)
 	{
 		return '%s';
 	}
-	function format_value($value)
+	public function format_value($value)
 	{
 		return $value;
 	}
-	function format_cell($str)
+	public function format_cell($str)
 	{
 		return $str;
 	}
-	function get_value($value)
+	public function get_value($value)
 	{
 		return $value;
 	}
 }
 class Tracker_field_text extends Tracker_field
 {
-	var $sort_type = SORT_STRING;
+	public $sort_type = SORT_STRING;
 
-	function get_tag()
+	public function get_tag()
 	{
 		$s_name = htmlsc($this->name);
 		$s_size = htmlsc($this->values[0]);
@@ -309,9 +309,9 @@ class Tracker_field_text extends Tracker_field
 }
 class Tracker_field_page extends Tracker_field_text
 {
-	var $sort_type = SORT_STRING;
+	public $sort_type = SORT_STRING;
 
-	function format_value($value)
+	public function format_value($value)
 	{
 		global $WikiName;
 
@@ -325,13 +325,13 @@ class Tracker_field_page extends Tracker_field_text
 }
 class Tracker_field_real extends Tracker_field_text
 {
-	var $sort_type = SORT_REGULAR;
+	public $sort_type = SORT_REGULAR;
 }
 class Tracker_field_title extends Tracker_field_text
 {
-	var $sort_type = SORT_STRING;
+	public $sort_type = SORT_STRING;
 
-	function format_cell($str)
+	public function format_cell($str)
 	{
 		make_heading($str);
 		return $str;
@@ -339,9 +339,9 @@ class Tracker_field_title extends Tracker_field_text
 }
 class Tracker_field_textarea extends Tracker_field
 {
-	var $sort_type = SORT_STRING;
+	public $sort_type = SORT_STRING;
 
-	function get_tag()
+	public function get_tag()
 	{
 		$s_name = htmlsc($this->name);
 		$s_cols = htmlsc($this->values[0]);
@@ -349,7 +349,7 @@ class Tracker_field_textarea extends Tracker_field
 		$s_value = htmlsc($this->default_value);
 		return "<textarea name=\"$s_name\" cols=\"$s_cols\" rows=\"$s_rows\">$s_value</textarea>";
 	}
-	function format_cell($str)
+	public function format_cell($str)
 	{
 		$str = preg_replace('/[\r\n]+/','',$str);
 		if (!empty($this->values[2]) and strlen($str) > ($this->values[2] + 3))
@@ -361,18 +361,20 @@ class Tracker_field_textarea extends Tracker_field
 }
 class Tracker_field_format extends Tracker_field
 {
-	var $sort_type = SORT_STRING;
+	public $sort_type = SORT_STRING;
 
-	var $styles = array();
-	var $formats = array();
+	public $styles = array();
+	public $formats = array();
 
-	function Tracker_field_format($field,$page,$refer,&$config)
+	public function __construct($field,$page,$refer,&$config)
 	{
-		parent::Tracker_field($field,$page,$refer,$config);
+		parent::__construct($field,$page,$refer,$config);
 
 		foreach ($this->config->get($this->name) as $option)
 		{
-			list($key,$style,$format) = array_pad(array_map(create_function('$a','return trim($a);'),$option),3,'');
+			list($key,$style,$format) = array_pad(array_map(function ($a) {
+                return trim($a);
+            },$option),3,'');
 			if ($style != '')
 			{
 				$this->styles[$key] = $style;
@@ -383,17 +385,17 @@ class Tracker_field_format extends Tracker_field
 			}
 		}
 	}
-	function get_tag()
+	public function get_tag()
 	{
 		$s_name = htmlsc($this->name);
 		$s_size = htmlsc($this->values[0]);
 		return "<input type=\"text\" name=\"$s_name\" size=\"$s_size\" />";
 	}
-	function get_key($str)
+	public function get_key($str)
 	{
 		return ($str == '') ? 'IS NULL' : 'IS NOT NULL';
 	}
-	function format_value($str)
+	public function format_value($str)
 	{
 		if (is_array($str))
 		{
@@ -402,7 +404,7 @@ class Tracker_field_format extends Tracker_field
 		$key = $this->get_key($str);
 		return array_key_exists($key,$this->formats) ? str_replace('%s',$str,$this->formats[$key]) : $str;
 	}
-	function get_style($str)
+	public function get_style($str)
 	{
 		$key = $this->get_key($str);
 		return array_key_exists($key,$this->styles) ? $this->styles[$key] : '%s';
@@ -410,15 +412,15 @@ class Tracker_field_format extends Tracker_field
 }
 class Tracker_field_file extends Tracker_field_format
 {
-	var $sort_type = SORT_STRING;
+	public $sort_type = SORT_STRING;
 
-	function get_tag()
+	public function get_tag()
 	{
 		$s_name = htmlsc($this->name);
 		$s_size = htmlsc($this->values[0]);
 		return "<input type=\"file\" name=\"$s_name\" size=\"$s_size\" />";
 	}
-	function format_value($str)
+	public function format_value($str)
 	{
 		if (array_key_exists($this->name,$_FILES))
 		{
@@ -435,9 +437,9 @@ class Tracker_field_file extends Tracker_field_format
 }
 class Tracker_field_radio extends Tracker_field_format
 {
-	var $sort_type = SORT_NUMERIC;
+	public $sort_type = SORT_NUMERIC;
 
-	function get_tag()
+	public function get_tag()
 	{
 		$s_name = htmlsc($this->name);
 		$retval = '';
@@ -455,25 +457,27 @@ class Tracker_field_radio extends Tracker_field_format
 
 		return $retval;
 	}
-	function get_key($str)
+	public function get_key($str)
 	{
 		return $str;
 	}
-	function get_value($value)
+	public function get_value($value)
 	{
 		static $options = array();
 		if (!array_key_exists($this->name,$options))
 		{
-			$options[$this->name] = array_flip(array_map(create_function('$arr','return $arr[0];'),$this->config->get($this->name)));
+			$options[$this->name] = array_flip(array_map(function ($arr) {
+                return $arr[0];
+            },$this->config->get($this->name)));
 		}
 		return array_key_exists($value,$options[$this->name]) ? $options[$this->name][$value] : $value;
 	}
 }
 class Tracker_field_select extends Tracker_field_radio
 {
-	var $sort_type = SORT_NUMERIC;
+	public $sort_type = SORT_NUMERIC;
 
-	function get_tag($empty=FALSE)
+	public function get_tag($empty=FALSE)
 	{
 		$s_name = htmlsc($this->name);
 		$s_size = (array_key_exists(0,$this->values) and is_numeric($this->values[0])) ?
@@ -499,9 +503,9 @@ class Tracker_field_select extends Tracker_field_radio
 }
 class Tracker_field_checkbox extends Tracker_field_radio
 {
-	var $sort_type = SORT_NUMERIC;
+	public $sort_type = SORT_NUMERIC;
 
-	function get_tag($empty=FALSE)
+	public function get_tag($empty=FALSE)
 	{
 		$s_name = htmlsc($this->name);
 		$defaults = array_flip(preg_split('/\s*,\s*/',$this->default_value,-1,PREG_SPLIT_NO_EMPTY));
@@ -524,9 +528,9 @@ class Tracker_field_checkbox extends Tracker_field_radio
 }
 class Tracker_field_hidden extends Tracker_field_radio
 {
-	var $sort_type = SORT_NUMERIC;
+	public $sort_type = SORT_NUMERIC;
 
-	function get_tag($empty=FALSE)
+	public function get_tag($empty=FALSE)
 	{
 		$s_name = htmlsc($this->name);
 		$s_default = htmlsc($this->default_value);
@@ -537,7 +541,7 @@ class Tracker_field_hidden extends Tracker_field_radio
 }
 class Tracker_field_submit extends Tracker_field
 {
-	function get_tag()
+	public function get_tag()
 	{
 		$s_title = htmlsc($this->title);
 		$s_page = htmlsc($this->page);
@@ -555,22 +559,22 @@ EOD;
 }
 class Tracker_field_date extends Tracker_field
 {
-	var $sort_type = SORT_NUMERIC;
+	public $sort_type = SORT_NUMERIC;
 
-	function format_cell($timestamp)
+	public function format_cell($timestamp)
 	{
 		return format_date($timestamp);
 	}
 }
 class Tracker_field_past extends Tracker_field
 {
-	var $sort_type = SORT_NUMERIC;
+	public $sort_type = SORT_NUMERIC;
 
-	function format_cell($timestamp)
+	public function format_cell($timestamp)
 	{
 		return get_passage($timestamp,FALSE);
 	}
-	function get_value($value)
+	public function get_value($value)
 	{
 		return UTIME - $value;
 	}
@@ -638,7 +642,7 @@ function plugin_tracker_getlist($page,$refer,$config_name,$list,$order='',$limit
 		return "<p>config file '".make_pagelink($config->page.'/'.$list)."' not found.</p>";
 	}
 
-	$list = &new Tracker_list($page,$refer,$config,$list);
+	$list = new Tracker_list($page,$refer,$config,$list);
 	$list->sort($order);
 	return $list->toString($limit);
 }
@@ -646,16 +650,16 @@ function plugin_tracker_getlist($page,$refer,$config_name,$list,$order='',$limit
 // 一覧クラス
 class Tracker_list
 {
-	var $page;
-	var $config;
-	var $list;
-	var $fields;
-	var $pattern;
-	var $pattern_fields;
-	var $rows;
-	var $order;
+	public $page;
+	public $config;
+	public $list;
+	public $fields;
+	public $pattern;
+	public $pattern_fields;
+	public $rows;
+	public $order;
 
-	function Tracker_list($page,$refer,&$config,$list)
+	public function __construct($page,$refer,&$config,$list)
 	{
 		$this->page = $page;
 		$this->config = &$config;
@@ -698,7 +702,7 @@ class Tracker_list
 			}
 		}
 	}
-	function add($page,$name)
+	public function add($page,$name)
 	{
 		static $moved = array();
 
@@ -738,7 +742,7 @@ class Tracker_list
 			}
 		}
 	}
-	function sort($order)
+	public function sort($order)
 	{
 		if ($order == '')
 		{
@@ -766,7 +770,7 @@ class Tracker_list
 					$dir = SORT_DESC;
 					break;
 				default:
-					continue;
+					break;
 			}
 			$this->order[$key] = $dir;
 		}
@@ -791,7 +795,7 @@ class Tracker_list
 
 		call_user_func_array('array_multisort',$params);
 	}
-	function replace_item($arr)
+	public function replace_item($arr)
 	{
 		$params = explode(',',$arr[1]);
 		$name = array_shift($params);
@@ -819,7 +823,7 @@ class Tracker_list
 		}
 		return $this->pipe ? str_replace('|','&#x7c;',$str) : $str;
 	}
-	function replace_title($arr)
+	public function replace_title($arr)
 	{
 		global $script;
 
@@ -862,7 +866,7 @@ class Tracker_list
 
 		return "[[$title$arrow>$script?plugin=tracker_list&refer=$r_page&config=$r_config&list=$r_list&order=$r_order]]";
 	}
-	function toString($limit=NULL)
+	public function toString($limit=NULL)
 	{
 		global $_tracker_messages;
 
@@ -906,7 +910,7 @@ class Tracker_list
 					$source .= $line;
 					continue;
 				}
-				$this->pipe = ($line{0} == '|' or $line{0} == ':');
+				$this->pipe = ($line[0] == '|' or $line[0] == ':');
 				$source .= preg_replace_callback('/\[([^\[\]]+)\]/',array(&$this,'replace_item'),$line);
 			}
 		}

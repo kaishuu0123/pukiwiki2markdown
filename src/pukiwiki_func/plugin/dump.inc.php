@@ -320,14 +320,14 @@ define('TARLIB_KIND_TAR', 1);
 
 class tarlib
 {
-	var $filename;
-	var $fp;
-	var $status;
-	var $arc_kind;
-	var $dummydata;
+	public $filename;
+	public $fp;
+	public $status;
+	public $arc_kind;
+	public $dummydata;
 
 	// コンストラクタ
-	function tarlib() {
+	public function __construct() {
 		$this->filename = '';
 		$this->fp       = FALSE;
 		$this->status   = TARLIB_STATUS_INIT;
@@ -339,7 +339,7 @@ class tarlib
 	// 引数  : tarファイルを作成するパス
 	// 返り値: TRUE .. 成功 , FALSE .. 失敗
 	////////////////////////////////////////////////////////////
-	function create($tempdir, $kind = 'tgz')
+	public function create($tempdir, $kind = 'tgz')
 	{
 		$tempnam = tempnam(realpath($tempdir), 'tarlib_create_');
 		if ($tempnam === FALSE) return FALSE;
@@ -371,7 +371,7 @@ class tarlib
 	//         $decode .. ページ名の変換をするか
 	// 返り値: 作成したファイル数
 	////////////////////////////////////////////////////////////
-	function add_dir($dir, $mask, $decode = FALSE)
+	public function add_dir($dir, $mask, $decode = FALSE)
 	{
 		$retvalue = 0;
 		
@@ -468,14 +468,14 @@ class tarlib
 	//         $typeflag .. TypeFlag (file/link)
 	// 戻り値: tarヘッダ情報
 	////////////////////////////////////////////////////////////
-	function _make_header($filename, $size, $mtime, $typeflag)
+	public function _make_header($filename, $size, $mtime, $typeflag)
 	{
 		$tar_data = array_fill(0, TARLIB_HDR_LEN, "\0");
 		
 		// ファイル名を保存
 		for($i = 0; $i < strlen($filename); $i++ ) {
 			if ($i < TARLIB_HDR_NAME_LEN) {
-				$tar_data[$i + TARLIB_HDR_NAME_OFFSET] = $filename{$i};
+				$tar_data[$i + TARLIB_HDR_NAME_OFFSET] = $filename[$i];
 			} else {
 				break;	// ファイル名が長すぎ
 			}
@@ -484,32 +484,32 @@ class tarlib
 		// mode
 		$modeid = TARLIB_DATA_MODE;
 		for($i = 0; $i < strlen($modeid); $i++ ) {
-			$tar_data[$i + TARLIB_HDR_MODE_OFFSET] = $modeid{$i};
+			$tar_data[$i + TARLIB_HDR_MODE_OFFSET] = $modeid[$i];
 		}
 
 		// uid / gid
 		$ugid = TARLIB_DATA_UGID;
 		for($i = 0; $i < strlen($ugid); $i++ ) {
-			$tar_data[$i + TARLIB_HDR_UID_OFFSET] = $ugid{$i};
-			$tar_data[$i + TARLIB_HDR_GID_OFFSET] = $ugid{$i};
+			$tar_data[$i + TARLIB_HDR_UID_OFFSET] = $ugid[$i];
+			$tar_data[$i + TARLIB_HDR_GID_OFFSET] = $ugid[$i];
 		}
 
 		// サイズ
 		$strsize = sprintf('%11o', $size);
 		for($i = 0; $i < strlen($strsize); $i++ ) {
-			$tar_data[$i + TARLIB_HDR_SIZE_OFFSET] = $strsize{$i};
+			$tar_data[$i + TARLIB_HDR_SIZE_OFFSET] = $strsize[$i];
 		}
 
 		// 最終更新時刻
 		$strmtime = sprintf('%o', $mtime);
 		for($i = 0; $i < strlen($strmtime); $i++ ) {
-			$tar_data[$i + TARLIB_HDR_MTIME_OFFSET] = $strmtime{$i};
+			$tar_data[$i + TARLIB_HDR_MTIME_OFFSET] = $strmtime[$i];
 		}
 
 		// チェックサム計算用のブランクを設定
 		$chkblanks = TARLIB_DATA_CHKBLANKS;
 		for($i = 0; $i < strlen($chkblanks); $i++ ) {
-			$tar_data[$i + TARLIB_HDR_CHKSUM_OFFSET] = $chkblanks{$i};
+			$tar_data[$i + TARLIB_HDR_CHKSUM_OFFSET] = $chkblanks[$i];
 		}
 
 		// タイプフラグ
@@ -522,7 +522,7 @@ class tarlib
 		}
 		$strchksum = sprintf('%7o',$sum);
 		for($i = 0; $i < strlen($strchksum); $i++ ) {
-			$tar_data[$i + TARLIB_HDR_CHKSUM_OFFSET] = $strchksum{$i};
+			$tar_data[$i + TARLIB_HDR_CHKSUM_OFFSET] = $strchksum[$i];
 		}
 
 		return $tar_data;
@@ -535,7 +535,7 @@ class tarlib
 	//         $size   .. データサイズ
 	// 戻り値: なし
 	////////////////////////////////////////////////////////////
-	function _write_data($header, $body, $size)
+	public function _write_data($header, $body, $size)
 	{
 		$fixsize  = ceil($size / TARLIB_BLK_LEN) * TARLIB_BLK_LEN - $size;
 
@@ -555,7 +555,7 @@ class tarlib
 	// 引数  : tarファイル名
 	// 返り値: TRUE .. 成功 , FALSE .. 失敗
 	////////////////////////////////////////////////////////////
-	function open($name = '', $kind = 'tgz')
+	public function open($name = '', $kind = 'tgz')
 	{
 		if (! PLUGIN_DUMP_ALLOW_RESTORE) return FALSE; // Not allowed
 
@@ -584,7 +584,7 @@ class tarlib
 	// 返り値: 展開したファイル名の一覧
 	// 補足  : ARAIさんのattachプラグインパッチを参考にしました
 	////////////////////////////////////////////////////////////
-	function extract($pattern)
+	public function extract($pattern)
 	{
 		if ($this->status != TARLIB_STATUS_OPEN) return ''; // Not opened
 		
@@ -602,8 +602,8 @@ class tarlib
 				$longname = '';
 			} else {
 				for ($i = 0; $i < TARLIB_HDR_NAME_LEN; $i++ ) {
-					if ($buff{$i + TARLIB_HDR_NAME_OFFSET} != "\0") {
-						$name .= $buff{$i + TARLIB_HDR_NAME_OFFSET};
+					if ($buff[$i + TARLIB_HDR_NAME_OFFSET] != "\0") {
+						$name .= $buff[$i + TARLIB_HDR_NAME_OFFSET];
 					} else {
 						break;
 					}
@@ -617,22 +617,22 @@ class tarlib
 			$checksum = '';
 			$chkblanks = TARLIB_DATA_CHKBLANKS;
 			for ($i = 0; $i < TARLIB_HDR_CHKSUM_LEN; $i++ ) {
-				$checksum .= $buff{$i + TARLIB_HDR_CHKSUM_OFFSET};
-				$buff{$i + TARLIB_HDR_CHKSUM_OFFSET} = $chkblanks{$i};
+				$checksum .= $buff[$i + TARLIB_HDR_CHKSUM_OFFSET];
+				$buff[$i + TARLIB_HDR_CHKSUM_OFFSET] = $chkblanks[$i];
 			}
 			list($checksum) = sscanf('0' . trim($checksum), '%i');
 
 			// Compute checksum
 			$sum = 0;
 			for($i = 0; $i < TARLIB_BLK_LEN; $i++ ) {
-				$sum += 0xff & ord($buff{$i});
+				$sum += 0xff & ord($buff[$i]);
 			}
 			if ($sum != $checksum) break; // Error
 				
 			// Size
 			$size = '';
 			for ($i = 0; $i < TARLIB_HDR_SIZE_LEN; $i++ ) {
-				$size .= $buff{$i + TARLIB_HDR_SIZE_OFFSET};
+				$size .= $buff[$i + TARLIB_HDR_SIZE_OFFSET];
 			}
 			list($size) = sscanf('0' . trim($size), '%i');
 
@@ -643,12 +643,12 @@ class tarlib
 			// 最終更新時刻
 			$strmtime = '';
 			for ($i = 0; $i < TARLIB_HDR_MTIME_LEN; $i++ ) {
-				$strmtime .= $buff{$i + TARLIB_HDR_MTIME_OFFSET};
+				$strmtime .= $buff[$i + TARLIB_HDR_MTIME_OFFSET];
 			}
 			list($mtime) = sscanf('0' . trim($strmtime), '%i');
 
 			// タイプフラグ
-//			 $type = $buff{TARLIB_HDR_TYPE_OFFSET};
+//			 $type = $buff[TARLIB_HDR_TYPE_OFFSET];
 
 			if ($name == TARLIB_DATA_LONGLINK) {
 				// LongLink
@@ -683,7 +683,7 @@ class tarlib
 	// 引数  : なし
 	// 返り値: なし
 	////////////////////////////////////////////////////////////
-	function close()
+	public function close()
 	{
 		if ($this->status == TARLIB_STATUS_CREATE) {
 			// ファイルを閉じる

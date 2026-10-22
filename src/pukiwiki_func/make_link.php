@@ -8,9 +8,9 @@
 //
 // Hyperlink-related functions
 
-require('html.php');
-require('func.php');
-require('plugin.php');
+require_once 'html.php';
+require_once 'func.php';
+require_once 'plugin.php';
 
 // Hyperlink decoration
 function make_link($string, $page = '')
@@ -22,31 +22,30 @@ function make_link($string, $page = '')
 
 	$clone = $converter->get_clone($converter);
 
-	return $clone->convert($string, ($page != '') ? $page : $vars['page']);
+	return $clone->convert($string, ($page != '') ? $page : ($vars['page'] ?? ''));
 }
 
 // Converters of inline element
 class InlineConverter
 {
-	var $converters; // as array()
-	var $pattern;
-	var $pos;
-	var $result;
+	public $converters; // as array()
+	public $pattern;
+	public $pos;
+	public $result;
+	public $page;
 
-	function get_clone($obj) {
+	public function get_clone($obj) {
 		static $clone_func;
 
 		if (! isset($clone_func)) {
-			if (version_compare(PHP_VERSION, '5.0.0', '<')) {
-				$clone_func = create_function('$a', 'return $a;');
-			} else {
-				$clone_func = create_function('$a', 'return clone $a;');
-			}
+			$clone_func = function ($a) {
+				return clone $a;
+			};
 		}
 		return $clone_func($obj);
 	}
 
-	function __clone() {
+	public function __clone() {
 		$converters = array();
 		foreach ($this->converters as $key=>$converter) {
 			$converters[$key] = $this->get_clone($converter);
@@ -54,7 +53,7 @@ class InlineConverter
 		$this->converters = $converters;
 	}
 
-	function InlineConverter($converters = NULL, $excludes = NULL)
+	public function __construct($converters = NULL, $excludes = NULL)
 	{
 		if ($converters === NULL) {
 			$converters = array(
@@ -91,7 +90,7 @@ class InlineConverter
 		$this->pattern = join('|', $patterns);
 	}
 
-	function convert($string, $page)
+	public function convert($string, $page)
 	{
 		$this->page   = $page;
 		$this->result = array();
@@ -107,7 +106,7 @@ class InlineConverter
         return $retval;
 	}
 
-	function replace($arr)
+	public function replace($arr)
 	{
 		$obj = $this->get_converter($arr);
 
@@ -117,7 +116,7 @@ class InlineConverter
 		return "\x08"; // Add a mark into latest processed part
 	}
 
-	function get_objects($string, $page)
+	public function get_objects($string, $page)
 	{
 		$matches = $arr = array();
 		preg_match_all('/' . $this->pattern . '/x', $string, $matches, PREG_SET_ORDER);
@@ -132,7 +131,7 @@ class InlineConverter
 		return $arr;
 	}
 
-	function & get_converter(& $arr)
+	public function get_converter(& $arr)
 	{
 		foreach (array_keys($this->converters) as $start) {
 			if ($arr[$start] == $arr[0])
@@ -145,34 +144,34 @@ class InlineConverter
 // Base class of inline elements
 class Link
 {
-	var $start;   // Origin number of parentheses (0 origin)
-	var $text;    // Matched string
+	public $start;   // Origin number of parentheses (0 origin)
+	public $text;    // Matched string
 
-	var $type;
-	var $page;
-	var $name;
-	var $body;
-	var $alias;
+	public $type;
+	public $page;
+	public $name;
+	public $body;
+	public $alias;
 
 	// Constructor
-	function Link($start)
+	public function __construct($start)
 	{
 		$this->start = $start;
 	}
 
 	// Return a regex pattern to match
-	function get_pattern() {}
+	public function get_pattern() {}
 
 	// Return number of parentheses (except (?:...) )
-	function get_count() {}
+	public function get_count() {}
 
 	// Set pattern that matches
-	function set($arr, $page) {}
+	public function set($arr, $page) {}
 
-	function toString() {}
+	public function toString() {}
 
 	// Private: Get needed parts from a matched array()
-	function splice($arr)
+	public function splice($arr)
 	{
 		$count = $this->get_count() + 1;
 		$arr   = array_pad(array_splice($arr, $this->start, $count), $count, '');
@@ -181,7 +180,7 @@ class Link
 	}
 
 	// Set basic parameters
-	function setParam($page, $name, $body, $type = '', $alias = '')
+	public function setParam($page, $name, $body, $type = '', $alias = '')
 	{
 		static $converter = NULL;
 
@@ -209,15 +208,15 @@ class Link
 // Inline plugins
 class Link_plugin extends Link
 {
-	var $pattern;
-	var $plain,$param;
+	public $pattern;
+	public $plain,$param;
 
-	function Link_plugin($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		$this->pattern = <<<EOD
 &
@@ -241,12 +240,12 @@ EOD;
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 4;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		list($all, $this->plain, $name, $this->param, $body) = $this->splice($arr);
 
@@ -259,7 +258,7 @@ EOD;
 		return parent::setParam($page, $name, $body, 'plugin');
 	}
 
-	function toString()
+	public function toString()
 	{
 		$body = ($this->body == '') ? '' : make_link($this->body);
 		$str = FALSE;
@@ -284,12 +283,12 @@ EOD;
 // Footnotes
 class Link_note extends Link
 {
-	function Link_note($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		return <<<EOD
 \(\(
@@ -298,12 +297,12 @@ class Link_note extends Link
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 1;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		global $foot_explain, $vars;
 		static $note_id = 0;
@@ -343,7 +342,7 @@ EOD;
 		return parent::setParam($page, $name, $body);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return $this->name;
 	}
@@ -352,12 +351,12 @@ EOD;
 // URLs
 class Link_url extends Link
 {
-	function Link_url($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		$s1 = $this->start + 1;
 		return <<<EOD
@@ -372,19 +371,19 @@ class Link_url extends Link
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 3;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		list(, , $alias, $name) = $this->splice($arr);
 		return parent::setParam($page, htmlsc($name),
 			'', 'url', $alias == '' ? $name : $alias);
 	}
 
-	function toString()
+	public function toString()
 	{
 		if (FALSE) {
 			$rel = '';
@@ -400,12 +399,12 @@ EOD;
 // URLs (InterWiki definition on "InterWikiName")
 class Link_url_interwiki extends Link
 {
-	function Link_url_interwiki($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		return <<<EOD
 \[       # open bracket
@@ -418,18 +417,18 @@ class Link_url_interwiki extends Link
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 2;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		list(, $name, $alias) = $this->splice($arr);
 		return parent::setParam($page, htmlsc($name), '', 'url', $alias);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return '<a href="' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 	}
@@ -438,14 +437,14 @@ EOD;
 // mailto: URL schemes
 class Link_mailto extends Link
 {
-	var $is_image, $image;
+	public $is_image, $image;
 
-	function Link_mailto($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		$s1 = $this->start + 1;
 		return <<<EOD
@@ -458,18 +457,18 @@ class Link_mailto extends Link
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 2;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		list(, $alias, $name) = $this->splice($arr);
 		return parent::setParam($page, $name, '', 'mailto', $alias == '' ? $name : $alias);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return '<a href="mailto:' . $this->name . '" rel="nofollow">' . $this->alias . '</a>';
 	}
@@ -478,16 +477,16 @@ EOD;
 // InterWikiName-rendered URLs
 class Link_interwikiname extends Link
 {
-	var $url    = '';
-	var $param  = '';
-	var $anchor = '';
+	public $url    = '';
+	public $param  = '';
+	public $anchor = '';
 
-	function Link_interwikiname($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		$s2 = $this->start + 2;
 		$s5 = $this->start + 5;
@@ -510,12 +509,12 @@ class Link_interwikiname extends Link
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 5;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		global $script;
 
@@ -539,7 +538,7 @@ EOD;
 		);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return '<a href="' . $this->url . $this->anchor . '" title="' .
 			$this->name . '" rel="nofollow">' . $this->alias . '</a>';
@@ -549,14 +548,14 @@ EOD;
 // BracketNames
 class Link_bracketname extends Link
 {
-	var $anchor, $refer;
+	public $anchor, $refer;
 
-	function Link_bracketname($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		global $WikiName, $BracketName;
 
@@ -576,12 +575,12 @@ class Link_bracketname extends Link
 EOD;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 4;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		global $WikiName;
 
@@ -599,7 +598,7 @@ EOD;
 		return parent::setParam($page, $name, '', 'pagename', $alias);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return make_pagelink(
 			$this->name,
@@ -613,30 +612,30 @@ EOD;
 // WikiNames
 class Link_wikiname extends Link
 {
-	function Link_wikiname($start)
+	public function __construct($start)
 	{
-		parent::Link($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		global $WikiName, $nowikiname;
 
 		return $nowikiname ? FALSE : '(' . $WikiName . ')';
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 1;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		list($name) = $this->splice($arr);
 		return parent::setParam($page, $name, '', 'pagename', $name);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return make_pagelink(
 			$this->name,
@@ -650,15 +649,15 @@ class Link_wikiname extends Link
 // AutoLinks
 class Link_autolink extends Link
 {
-	var $forceignorepages = array();
-	var $auto;
-	var $auto_a; // alphabet only
+	public $forceignorepages = array();
+	public $auto;
+	public $auto_a; // alphabet only
 
-	function Link_autolink($start)
+	public function __construct($start)
 	{
 		global $autolink;
 
-		parent::Link($start);
+		parent::__construct($start);
 
 		if (! $autolink || ! file_exists(CACHE_DIR . 'autolink.dat'))
 			return;
@@ -669,17 +668,17 @@ class Link_autolink extends Link
 		$this->forceignorepages = explode("\t", trim($forceignorepages));
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		return isset($this->auto) ? '(' . $this->auto . ')' : FALSE;
 	}
 
-	function get_count()
+	public function get_count()
 	{
 		return 1;
 	}
 
-	function set($arr, $page)
+	public function set($arr, $page)
 	{
 		global $WikiName;
 
@@ -692,7 +691,7 @@ class Link_autolink extends Link
 		return parent::setParam($page, $name, '', 'pagename', $name);
 	}
 
-	function toString()
+	public function toString()
 	{
 		return make_pagelink($this->name, $this->alias, '', $this->page, TRUE);
 	}
@@ -700,12 +699,12 @@ class Link_autolink extends Link
 
 class Link_autolink_a extends Link_autolink
 {
-	function Link_autolink_a($start)
+	public function __construct($start)
 	{
-		parent::Link_autolink($start);
+		parent::__construct($start);
 	}
 
-	function get_pattern()
+	public function get_pattern()
 	{
 		return isset($this->auto_a) ? '(' . $this->auto_a . ')' : FALSE;
 	}
@@ -770,7 +769,7 @@ function get_fullname($name, $refer)
 	if ($name == '' || $name == './') return $refer;
 
 	// Absolute path
-	if ($name{0} == '/') {
+	if ($name[0] == '/') {
 		$name = substr($name, 1);
 		return ($name == '') ? $defaultpage : $name;
 	}

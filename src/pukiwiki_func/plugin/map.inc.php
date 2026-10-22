@@ -46,7 +46,7 @@ function plugin_map_action()
 	// Generate a tree
 	$nodes = array();
 	foreach ($pages as $page)
-		$nodes[$page] = & new MapNode($page, $reverse);
+		$nodes[$page] = new MapNode($page, $reverse);
 
 	// Node not found: Because of filtererd by $non_list
 	if (! isset($nodes[$refer])) $vars['refer'] = $refer = $defaultpage;
@@ -95,16 +95,16 @@ function plugin_map_action()
 
 class MapNode
 {
-	var $page;
-	var $is_page;
-	var $link;
-	var $id;
-	var $rels;
-	var $parent_id = 0;
-	var $done;
-	var $hide_pattern;
+	public $page;
+	public $is_page;
+	public $link;
+	public $id;
+	public $rels;
+	public $parent_id = 0;
+	public $done;
+	public $hide_pattern;
 
-	function MapNode($page, $reverse = FALSE)
+	public function __construct($page, $reverse = FALSE)
 	{
 		global $script, $non_list;
 
@@ -125,14 +125,14 @@ class MapNode
 			$mark . '</a>';
 	}
 
-	function hide(& $pages)
+	public function hide(& $pages)
 	{
 		if (! PLUGIN_MAP_SHOW_HIDDEN)
 			$pages = array_diff($pages, preg_grep($this->hide_pattern, $pages));
 		return $pages;
 	}
 
-	function ref()
+	public function ref()
 	{
 		$refs = array();
 		$file = $this->cache . '.ref';
@@ -147,7 +147,7 @@ class MapNode
 		return $refs;
 	}
 
-	function rel()
+	public function rel()
 	{
 		$rels = array();
 		$file = $this->cache . '.rel';
@@ -160,7 +160,7 @@ class MapNode
 		return $rels;
 	}
 
-	function chain(& $nodes)
+	public function chain(& $nodes)
 	{
 		if ($this->done) return;
 
@@ -168,7 +168,7 @@ class MapNode
 		if ($this->parent_id == 0) $this->parent_id = -1;
 
 		foreach ($this->rels as $page) {
-			if (! isset($nodes[$page])) $nodes[$page] = & new MapNode($page);
+			if (! isset($nodes[$page])) $nodes[$page] = new MapNode($page);
 			if ($nodes[$page]->parent_id == 0)
 				$nodes[$page]->parent_id = $this->id;
 		}
@@ -176,7 +176,7 @@ class MapNode
 			$nodes[$page]->chain($nodes);
 	}
 
-	function toString(& $nodes, $level = 1, $parent_id = -1)
+	public function toString(& $nodes, $level = 1, $parent_id = -1)
 	{
 		$indent = str_repeat(' ', $level);
 

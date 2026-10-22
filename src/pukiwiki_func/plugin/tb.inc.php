@@ -140,7 +140,7 @@ function plugin_tb_output_rsslist($tb_id)
 		// _utime_, title, excerpt, _blog_name_
 		array_shift($arr); // Cut utime
 		list ($url, $title, $excerpt) = array_map(
-			create_function('$a', 'return htmlspecialchars($a);'), $arr);
+			function ($a) { return htmlspecialchars($a); }, $arr);
 		$items .= <<<EOD
 
    <item>
@@ -200,7 +200,7 @@ function plugin_tb_output_htmllist($tb_id)
 	$data = tb_get(tb_get_filename($page));
 
 	// Sort: The first is the latest
-	usort($data, create_function('$a,$b', 'return $b[0] - $a[0];'));
+	usort($data, function ($a, $b) { return $b[0] - $a[0]; });
 
 	$tb_body = '';
 	foreach ($data as $x) {
