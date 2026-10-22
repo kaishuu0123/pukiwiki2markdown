@@ -1,6 +1,8 @@
 FROM php:8.5.12-cli
 
-RUN apt -y update && apt -y upgrade
+RUN apt -y update && apt -y upgrade && \
+    apt -y install --no-install-recommends unzip git && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
