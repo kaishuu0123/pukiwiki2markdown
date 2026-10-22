@@ -1,4 +1,4 @@
-FROM php:7
+FROM php:8.5.12-cli
 
 RUN apt -y update && apt -y upgrade
 
